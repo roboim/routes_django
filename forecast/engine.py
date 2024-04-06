@@ -1,6 +1,7 @@
 import csv
 import os
 from pprint import pprint
+from datetime import datetime, timedelta
 
 from forecast.open_meteo_data import OpenMeteoData
 from vk_api import VkGroupAdmin
@@ -143,10 +144,83 @@ def read_routes(file_csv) -> dict:
     return data_routes
 
 
+def manual_input(test_value) -> dict:
+    """Обработка входящего запроса"""
+    data_request = dict()
+    if test_value == 0:
+        weekend = input("\nТребуется прогноз на ближайшие субботу и воскресенье на 2 дня до 160 км от Москвы? ")
+        weekend = weekend.lower()
+        if weekend == "да" or weekend == "1":
+            test_value = 1
+        else:
+            test_value = 0
+    if test_value == 0:
+        target_days = input("\nУкажите количество дней:")
+        try:
+            target_days = int(target_days)
+            data_request.setdefault("target_days", target_days)
+        except ValueError:
+            print("Некорректный ввод")
+            exit(101)
+        if int(target_days) > 14:
+            target_days = "14"
+        start_day = input("\nУкажите дату начала маршрута(ГГГГ-ММ-ДД):")
+        try:
+            start_day = str(start_day)
+            data_request.setdefault("start_day", start_day)
+        except ValueError:
+            print("Некорректный ввод")
+            exit(1001)
+        start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
+        finish_day = start_day_d + timedelta(int(target_days)-1)
+        data_request.setdefault("finish_day", finish_day)
+        today_now = datetime.now().date()
+        finish_max_day = today_now + timedelta(14)
+        if today_now > start_day_d or start_day_d > finish_max_day or today_now > finish_day or finish_day > finish_max_day:
+            print(f"\nДата начала и завершения маршрута должны быть в интервале: {today_now} - {finish_max_day}")
+            exit(1002)
+        target_distancemin_km = input("\nУкажите минимальную удалённость от Москвы в км:")
+        try:
+            target_distancemin_km = int(target_distancemin_km)
+            data_request.setdefault("target_distancemin_km", target_distancemin_km)
+        except ValueError:
+            print("Некорректный ввод")
+            exit(102)
+        target_distancemax_km = input("\nУкажите максимальную удалённость от Москвы в км:")
+        try:
+            target_distancemax_km = int(target_distancemax_km)
+            data_request.setdefault("target_distancemax_km", target_distancemax_km)
+        except ValueError:
+            print("Некорректный ввод")
+            exit(103)
+        print("\n")
+    elif test_value == 1:
+        # Ближайшая суббота
+        d_start = datetime.today().strftime('%Y-%m-%d')
+        d = datetime.strptime(d_start, '%Y-%m-%d')
+        t = timedelta((7 + 5 - d.weekday()) % 7)
+
+        target_days = "2"
+        start_day = (d + t).strftime('%Y-%m-%d')
+        start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
+        finish_day = start_day_d + timedelta(int(target_days)-1)
+        target_distancemin_km = "1"
+        target_distancemax_km = "160" # 160 км
+
+        data_request.setdefault("target_days", target_days)
+        data_request.setdefault("start_day", start_day)
+        data_request.setdefault("finish_day", finish_day)
+        data_request.setdefault("target_distancemin_km", target_distancemin_km)
+        data_request.setdefault("target_distancemax_km", target_distancemax_km)
+
+    # pprint(data_request)
+    return data_request
+
+
 def get_routes() -> dict:
     # Moscow lat="55.6595",lon="37.7937"
     # unixtime += 10800 # Время МСК
-    test_seting = 1
+    test_seting = 0
     # 2 - get_open_meteo_data
     meteo_API = 2
     print_pdf = False
@@ -166,7 +240,7 @@ def get_routes() -> dict:
     data_routes = read_routes(data_file_csv)
     view_set = data_routes
 
-    # input_data_w = manual_input(test_seting)
+    input_data_w = manual_input(test_seting)
     # best_offer_r = check_and_sort_routes(active_route, meteo_API, route_forecast, input_data_w, data_routes, routes_forecast)
     # view_set = print_sorted_routes(data_routes, meteo_API, input_data_w, best_offer_r, print_pdf)
 
