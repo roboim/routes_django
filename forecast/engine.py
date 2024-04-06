@@ -1,5 +1,5 @@
 import csv
-
+import os
 from pprint import pprint
 
 from forecast.open_meteo_data import OpenMeteoData
@@ -8,7 +8,9 @@ from vk_api import VkGroupAdmin
 
 class RouteData:
     """Полное описание маршрута"""
-    def __init__(self, route_n: int, route_db_n: int, river_name_p: str, area_p: str, start_point_p: str, end_point_p: str,
+
+    def __init__(self, route_n: int, route_db_n: int, river_name_p: str, area_p: str, start_point_p: str,
+                 end_point_p: str,
                  distance_km_p: str, year_journey_p: str, qty_days_p: str, distance_from_city_p: str, feature_p: str,
                  camping_places_p: str, coord_camping_places_p: str, picture_links_p: str,
                  coord_start_point_p: str, coord_end_point_p: str, name_p: str, temperature_p: float,
@@ -17,66 +19,66 @@ class RouteData:
                  precipitation_sum_p: float, precipitation_sum_l: list, precipitation: str):
         self.route_n = route_n  # ['Маршрут']
         self.route_db_n = route_db_n  # ['№']
-        self.river_name_p = river_name_p  #['Река']
-        self.area_p = area_p  #['Область']
-        self.start_point_p = start_point_p  #['Место старта']
-        self.end_point_p = end_point_p  #['Место финиша']
-        self.distance_km_p = distance_km_p  #['Дистанция']
-        self.year_journey_p = year_journey_p  #['Год']
-        self.qty_days_p = qty_days_p  #['Кол-во дней']
-        self.distance_from_city_p = distance_from_city_p  #['От Москвы, км']
-        self.feature_p = feature_p  #['Особенность']
-        self.camping_places_p = camping_places_p  #['Стоянки']
-        self.coord_camping_places_p = coord_camping_places_p  #['Координаты стоянок']
-        self.picture_links_p = picture_links_p  #['Фотоотчёт']
-        self.coord_start_point_p = coord_start_point_p  #['Координаты старта']
-        self.coord_end_point_p = coord_end_point_p  #['Координаты финиша']
-        self.name_p = name_p  #['Ответ сервера по месту прогноза']
-        self.temperature_p = temperature_p  #['Температура']
-        self.temperature_2m_max_p = temperature_2m_max_p  #['Максимальная температура по дням']
-        self.temperature_2m_min_p = temperature_2m_min_p  #['Минимальная температура по ночам']
-        self.sunrise_p = sunrise_p  #['Рассвет']
-        self.sunset_p = sunset_p  #['Закат']
-        self.wind_p = wind_p  #['Ветер']
-        self.wind_gust_p = wind_gust_p  #['Порыв ветра']
-        self.clouds_p = clouds_p  #['Облачность']
+        self.river_name_p = river_name_p  # ['Река']
+        self.area_p = area_p  # ['Область']
+        self.start_point_p = start_point_p  # ['Место старта']
+        self.end_point_p = end_point_p  # ['Место финиша']
+        self.distance_km_p = distance_km_p  # ['Дистанция']
+        self.year_journey_p = year_journey_p  # ['Год']
+        self.qty_days_p = qty_days_p  # ['Кол-во дней']
+        self.distance_from_city_p = distance_from_city_p  # ['От Москвы, км']
+        self.feature_p = feature_p  # ['Особенность']
+        self.camping_places_p = camping_places_p  # ['Стоянки']
+        self.coord_camping_places_p = coord_camping_places_p  # ['Координаты стоянок']
+        self.picture_links_p = picture_links_p  # ['Фотоотчёт']
+        self.coord_start_point_p = coord_start_point_p  # ['Координаты старта']
+        self.coord_end_point_p = coord_end_point_p  # ['Координаты финиша']
+        self.name_p = name_p  # ['Ответ сервера по месту прогноза']
+        self.temperature_p = temperature_p  # ['Температура']
+        self.temperature_2m_max_p = temperature_2m_max_p  # ['Максимальная температура по дням']
+        self.temperature_2m_min_p = temperature_2m_min_p  # ['Минимальная температура по ночам']
+        self.sunrise_p = sunrise_p  # ['Рассвет']
+        self.sunset_p = sunset_p  # ['Закат']
+        self.wind_p = wind_p  # ['Ветер']
+        self.wind_gust_p = wind_gust_p  # ['Порыв ветра']
+        self.clouds_p = clouds_p  # ['Облачность']
         self.description = description  # ['Погода по дням']
-        self.description_p = description_p  #['Погода']
-        self.precipitation_sum_p = precipitation_sum_p  #['Осадки']
-        self.precipitation_sum_l = precipitation_sum_l  #['Осадки по дням']
+        self.description_p = description_p  # ['Погода']
+        self.precipitation_sum_p = precipitation_sum_p  # ['Осадки']
+        self.precipitation_sum_l = precipitation_sum_l  # ['Осадки по дням']
         self.precipitation = precipitation  # Осадки_качественно
 
     def route_clear(self) -> None:
         """Полностью очистить данные по маршруту"""
         self.route_n = 0  # ['Маршрут']
         self.route_db_n = 0  # ['№']
-        self.river_name_p = ""  #['Река']
-        self.area_p = ""  #['Область']
-        self.start_point_p = ""  #['Место старта']
-        self.end_point_p = ""  #['Место финиша']
-        self.distance_km_p = ""  #['Дистанция']
-        self.year_journey_p = ""  #['Год']
-        self.qty_days_p = ""  #['Кол-во дней']
-        self.distance_from_city_p = ""  #['От Москвы, км']
-        self.feature_p = ""  #['Особенность']
-        self.camping_places_p = ""  #['Стоянки']
-        self.coord_camping_places_p = ""  #['Координаты стоянок']
-        self.picture_links_p = ""  #['Фотоотчёт']
-        self.coord_start_point_p = ""  #['Координаты старта']
-        self.coord_end_point_p = ""  #['Координаты финиша']
-        self.name_p = ""  #['Ответ сервера по месту прогноза']
-        self.temperature_p = 0.0  #['Температура']
-        self.temperature_2m_max_p = []  #['Максимальная температура по дням']
-        self.temperature_2m_min_p = []  #['Минимальная температура по ночам']
-        self.sunrise_p = ""  #['Рассвет']
-        self.sunset_p = ""  #['Закат']
-        self.wind_p = 0.0  #['Ветер']
-        self.wind_gust_p = 0.0  #['Порыв ветра']
-        self.clouds_p = 0.0  #['Облачность']
+        self.river_name_p = ""  # ['Река']
+        self.area_p = ""  # ['Область']
+        self.start_point_p = ""  # ['Место старта']
+        self.end_point_p = ""  # ['Место финиша']
+        self.distance_km_p = ""  # ['Дистанция']
+        self.year_journey_p = ""  # ['Год']
+        self.qty_days_p = ""  # ['Кол-во дней']
+        self.distance_from_city_p = ""  # ['От Москвы, км']
+        self.feature_p = ""  # ['Особенность']
+        self.camping_places_p = ""  # ['Стоянки']
+        self.coord_camping_places_p = ""  # ['Координаты стоянок']
+        self.picture_links_p = ""  # ['Фотоотчёт']
+        self.coord_start_point_p = ""  # ['Координаты старта']
+        self.coord_end_point_p = ""  # ['Координаты финиша']
+        self.name_p = ""  # ['Ответ сервера по месту прогноза']
+        self.temperature_p = 0.0  # ['Температура']
+        self.temperature_2m_max_p = []  # ['Максимальная температура по дням']
+        self.temperature_2m_min_p = []  # ['Минимальная температура по ночам']
+        self.sunrise_p = ""  # ['Рассвет']
+        self.sunset_p = ""  # ['Закат']
+        self.wind_p = 0.0  # ['Ветер']
+        self.wind_gust_p = 0.0  # ['Порыв ветра']
+        self.clouds_p = 0.0  # ['Облачность']
         self.description = []  # ['Погода по дням']
-        self.description_p = []  #['Погода']
-        self.precipitation_sum_p = 0.0  #['Осадки']
-        self.precipitation_sum_l = []  #['Осадки по дням']
+        self.description_p = []  # ['Погода']
+        self.precipitation_sum_p = 0.0  # ['Осадки']
+        self.precipitation_sum_l = []  # ['Осадки по дням']
         self.precipitation = ""  # Осадки_качественно
 
     def read_active_route(self, route_number, route_data) -> None:
@@ -120,6 +122,7 @@ class RouteData:
         pprint(self.river_name_p)
         pprint(self.area_p)
 
+
 def read_routes(file_csv) -> dict:
     """ чтение csv через rDictReader.
     # особенности: читаем только построчно, файл закрывать нельзя, можно читать сколь угодно большие файлы
@@ -133,15 +136,14 @@ def read_routes(file_csv) -> dict:
             count += 1
             data_routes.setdefault(count, row)
             # for field in row:
-                # print(field)
-                # print(row[field])
+            # print(field)
+            # print(row[field])
     # print(data_routes)
     print(f"В этом файле указано количество маршрутов: {count}")
     return data_routes
 
 
 def get_routes() -> dict:
-
     # Moscow lat="55.6595",lon="37.7937"
     # unixtime += 10800 # Время МСК
     test_seting = 1
@@ -149,15 +151,16 @@ def get_routes() -> dict:
     meteo_API = 2
     print_pdf = False
     data_file_csv = "data.csv"
-    vk_admin = VkGroupAdmin('', '5.199', '223468060')
+    vk_admin = VkGroupAdmin(os.getenv('VK_TOKEN', 'token'), os.getenv('VK_API_VERSION', 'version'),
+                            os.getenv('VK_GROUP_ID', 'group_id'))
     route_forecast = OpenMeteoData()
     active_route = RouteData(0, 0, "", "", "", "",
-                     "", "", "", "", "",
-                     "", "", "",
-                     "", "", "", 0.0,
-                     [], [], "", "",
-                     0.0, 0.0, 0.0, [], [],
-                     0.0, [], "")
+                             "", "", "", "", "",
+                             "", "", "",
+                             "", "", "", 0.0,
+                             [], [], "", "",
+                             0.0, 0.0, 0.0, [], [],
+                             0.0, [], "")
     routes_forecast = dict()
 
     data_routes = read_routes(data_file_csv)

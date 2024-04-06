@@ -8,5 +8,5 @@ app_name = 'forecast'
 r = DefaultRouter()
 
 urlpatterns = [
-    path('route/', read_routes_from_csv, name='route'),
+    path('routes/', read_routes_from_csv, name='routes'),
 ] + r.urls
