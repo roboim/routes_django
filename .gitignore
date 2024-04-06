@@ -1,6 +1,8 @@
 /venv
 /.idea
 /__pycache__
+/forecast/__pycache__
+/routes_django/__pycache__
 
 
 .env
