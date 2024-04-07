@@ -38,7 +38,7 @@ class Route(models.Model):
         ordering = ('-name',)
 
     def __str__(self):
-        return self.name
+        return f'Маршрут: {self.name}, внешний номер: {self.route_db_id}, год прохождения:  {self.year_journey}'
 
 
 class RouteWeather:

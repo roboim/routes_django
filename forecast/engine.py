@@ -220,7 +220,7 @@ def manual_input(test_value) -> dict:
 def get_routes() -> dict:
     # Moscow lat="55.6595",lon="37.7937"
     # unixtime += 10800 # Время МСК
-    test_seting = 0
+    test_seting = 1
     # 2 - get_open_meteo_data
     meteo_API = 2
     print_pdf = False

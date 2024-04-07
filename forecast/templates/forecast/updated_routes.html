@@ -2,17 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Базовые маршруты</title>
+    <title>Обновлённые маршруты</title>
 </head>
 <body>
-    <h1>Основная информация</h1>
+    <h1>Обновлённые маршруты</h1>
     <p>{{ header }}</p>
 
     <li>------------------------------</li>
     {% for route in routes %}
-        {% for el1, el2  in route.items %}
-        <a>{{ el1 }} : {{ el2 }}<br/></a>
-        {% endfor %}
+        <a>{{ route }}<br/></a>
         <li>------------------------------</li>
     {% endfor %}
 
