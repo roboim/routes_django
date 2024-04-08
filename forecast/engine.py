@@ -15,17 +15,17 @@ DATA_CSV_FILE = os.getenv('DATA_CSV_FILE')
 class RouteData:
     """Полное описание маршрута"""
 
-    def __init__(self, route_n: int, route_db_n: int, river_name_p: str, area_p: str, start_point_p: str,
+    def __init__(self, route_n: int, route_db_n: int, name: str, area_p: str, start_point_p: str,
                  end_point_p: str,
-                 distance_km_p: str, year_journey_p: str, qty_days_p: str, distance_from_city_p: str, feature_p: str,
+                 distance_km_p: float, year_journey_p: int, qty_days_p: int, distance_from_city_p: float, feature_p: str,
                  camping_places_p: str, coord_camping_places_p: str, picture_links_p: str,
-                 coord_start_point_p: str, coord_end_point_p: str, name_p: str, temperature_p: float,
+                 coord_start_point_p: str, coord_end_point_p: str, category_p: int, name_p: str, temperature_p: float,
                  temperature_2m_max_p: list, temperature_2m_min_p: list, sunrise_p: str, sunset_p: str,
                  wind_p: float, wind_gust_p: float, clouds_p: float, description: list, description_p: list,
                  precipitation_sum_p: float, precipitation_sum_l: list, precipitation: str):
         self.route_n = route_n  # ['Маршрут']
         self.route_db_n = route_db_n  # ['№']
-        self.river_name_p = river_name_p  # ['Река']
+        self.name = name  # ['Река']
         self.area_p = area_p  # ['Область']
         self.start_point_p = start_point_p  # ['Место старта']
         self.end_point_p = end_point_p  # ['Место финиша']
@@ -39,6 +39,7 @@ class RouteData:
         self.picture_links_p = picture_links_p  # ['Фотоотчёт']
         self.coord_start_point_p = coord_start_point_p  # ['Координаты старта']
         self.coord_end_point_p = coord_end_point_p  # ['Координаты финиша']
+        self.category_p = category_p  # ['Категория']
         self.name_p = name_p  # ['Ответ сервера по месту прогноза']
         self.temperature_p = temperature_p  # ['Температура']
         self.temperature_2m_max_p = temperature_2m_max_p  # ['Максимальная температура по дням']
@@ -52,26 +53,27 @@ class RouteData:
         self.description_p = description_p  # ['Погода']
         self.precipitation_sum_p = precipitation_sum_p  # ['Осадки']
         self.precipitation_sum_l = precipitation_sum_l  # ['Осадки по дням']
-        self.precipitation = precipitation  # Осадки_качественно
+        self.precipitation = precipitation  # ['Осадки качественно']
 
     def route_clear(self) -> None:
         """Полностью очистить данные по маршруту"""
         self.route_n = 0  # ['Маршрут']
         self.route_db_n = 0  # ['№']
-        self.river_name_p = ""  # ['Река']
+        self.name = ""  # ['Река']
         self.area_p = ""  # ['Область']
         self.start_point_p = ""  # ['Место старта']
         self.end_point_p = ""  # ['Место финиша']
-        self.distance_km_p = ""  # ['Дистанция']
-        self.year_journey_p = ""  # ['Год']
-        self.qty_days_p = ""  # ['Кол-во дней']
-        self.distance_from_city_p = ""  # ['От Москвы, км']
+        self.distance_km_p = 0  # ['Дистанция']
+        self.year_journey_p = 0  # ['Год']
+        self.qty_days_p = 0  # ['Кол-во дней']
+        self.distance_from_city_p = 0  # ['От Москвы, км']
         self.feature_p = ""  # ['Особенность']
         self.camping_places_p = ""  # ['Стоянки']
         self.coord_camping_places_p = ""  # ['Координаты стоянок']
         self.picture_links_p = ""  # ['Фотоотчёт']
         self.coord_start_point_p = ""  # ['Координаты старта']
         self.coord_end_point_p = ""  # ['Координаты финиша']
+        self.category_p = 0  # ['Категория']
         self.name_p = ""  # ['Ответ сервера по месту прогноза']
         self.temperature_p = 0.0  # ['Температура']
         self.temperature_2m_max_p = []  # ['Максимальная температура по дням']
@@ -85,26 +87,32 @@ class RouteData:
         self.description_p = []  # ['Погода']
         self.precipitation_sum_p = 0.0  # ['Осадки']
         self.precipitation_sum_l = []  # ['Осадки по дням']
-        self.precipitation = ""  # Осадки_качественно
+        self.precipitation = ""  # ['Осадки качественно']
 
-    def read_active_route(self, route_number, route_data) -> None:
+    def read_active_route(self, route_data) -> None:
         """Прочитать данные по маршруту"""
-        self.route_n = route_number
-        self.route_db_n = route_data['№']
-        self.river_name_p = route_data['Река']
-        self.area_p = route_data['Область']
-        self.start_point_p = route_data['Место старта']
-        self.end_point_p = route_data['Место финиша']
-        self.distance_km_p = route_data['Дистанция']
-        self.year_journey_p = route_data['Год']
-        self.qty_days_p = route_data['Кол-во дней']
-        self.distance_from_city_p = route_data['От Москвы, км']
-        self.feature_p = route_data['Особенность']
-        self.camping_places_p = route_data['Стоянки']
-        self.coord_camping_places_p = route_data['Координаты стоянок']
-        self.picture_links_p = route_data['Фотоотчёт']
-        self.coord_start_point_p = route_data['Координаты старта']
-        self.coord_end_point_p = route_data['Координаты финиша']
+        self.route_n = route_data.id  # ['Маршрут']
+        self.route_db_n = route_data.route_db_id  # ['№']
+        self.name = route_data.name  # ['Река']
+        self.area_p = route_data.area  # ['Область']
+        self.start_point_p = route_data.start_point  # ['Место старта']
+        self.end_point_p = route_data.end_point  # ['Место финиша']
+        self.distance_km_p = route_data.distance_km  # ['Дистанция']
+        self.year_journey_p = route_data.year_journey  # ['Год']
+        self.qty_days_p = route_data.qty_days  # ['Кол-во дней']
+        self.distance_from_city_p = route_data.distance_from_city  # ['От Москвы, км']
+        self.feature_p = route_data.feature  # ['Особенность']
+        self.camping_places_p = route_data.camping_places  # ['Стоянки']
+        self.coord_camping_places_p = route_data.coord_camping_places  # ['Координаты стоянок']
+        self.picture_links_p = route_data.picture_links  # ['Фотоотчёт']
+        self.coord_start_point_p = route_data.coord_start_point  # ['Координаты старта']
+        self.coord_end_point_p = route_data.coord_end_point_p  # ['Координаты финиша']
+        self.category_p = route_data.category  # ['Категория']
+
+    def copy_route(self, route_number, route_data) -> None:
+        for attr in dir(self):
+            if not callable(getattr(self, attr)) and not attr.startswith("__"):
+                setattr(self, attr, route_data[attr])
 
     def write_route_forecast(self, route_data) -> None:
         """Записать данные маршрута по погоде"""
@@ -125,7 +133,7 @@ class RouteData:
 
     def route_pr(self) -> None:
         """Вывод названия реки и области"""
-        pprint(self.river_name_p)
+        pprint(self.name)
         pprint(self.area_p)
 
 
@@ -389,7 +397,7 @@ def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, d
     major_points = list()
     for route_number_r, route_data_r in data_routes_r.items():
         active_route.route_clear()
-        active_route.read_active_route(route_number_r, route_data_r)
+        active_route.copy_route(route_number_r, route_data_r)
         try:
             coord_data = split_lat_lon(active_route.coord_start_point_p)
             check_flag = active_route.coord_start_point_p + active_route.coord_end_point_p
@@ -414,7 +422,7 @@ def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, d
                     list_offer.setdefault(route_number_r, route_data_r)
 
         except IndexError:
-            print(f"Не введены координаты старта для маршрута {active_route.river_name_p}: "
+            print(f"Не введены координаты старта для маршрута {active_route.name_p}: "
                   f"{active_route.start_point_p} - {active_route.end_point_p}.")
 
     best_offer = dict(sorted(list_offer.items(), key=lambda item: item[1]['Температура'], reverse=True))
@@ -481,21 +489,35 @@ def get_appropriate_routes(qty_days: str, distance_min: str, distance_max: str) 
     return appropriate_routes
 
 
-def create_main_routes_data(route_id_dct: dict) -> dict:
-    return {}
+def create_main_routes_data(route_id_dict: dict, active_route: RouteData) -> dict:
+    routes_dict = dict()
+    try:
+        for num, route_id in route_id_dict.items():
+            active_route.route_clear()
+            route_cur = Route.objects.get(pk=route_id.id)
+            active_route.read_active_route(route_cur)
+            route_data = dict()
+            for attr in dir(active_route):
+                if not callable(getattr(active_route, attr)) and not attr.startswith("__"):
+                    route_data[attr] = getattr(active_route, attr)
+            routes_dict.setdefault(num, route_data)
+    except Exception as error:
+        print(f'Ошибка чтения маршрутов. Загружены: {routes_dict}')
+        exit(104)
+    return routes_dict
 
 
 def get_routes(test_seting: int, meteo_API: int, print_pdf: bool) -> dict:
     # Moscow lat="55.6595",lon="37.7937"
     # unixtime += 10800 # Время МСК
-    # 2 - get_open_meteo_data
+    # meteo_API == 2 - get_open_meteo_data
     vk_admin = VkGroupAdmin(os.getenv('VK_TOKEN', 'token'), os.getenv('VK_API_VERSION', 'version'),
                             os.getenv('VK_GROUP_ID', 'group_id'))
     route_forecast = OpenMeteoData()
     active_route = RouteData(0, 0, "", "", "", "",
-                             "", "", "", "", "",
+                             0, 0, 0, 0, "",
                              "", "", "",
-                             "", "", "", 0.0,
+                             "", "", 0, "", 0.0,
                              [], [], "", "",
                              0.0, 0.0, 0.0, [], [],
                              0.0, [], "")
@@ -503,7 +525,7 @@ def get_routes(test_seting: int, meteo_API: int, print_pdf: bool) -> dict:
     input_data_w = manual_input(test_seting)
     route_ids = get_appropriate_routes(input_data_w['target_days'], input_data_w['target_distancemin_km'],
                                        input_data_w['target_distancemax_km'])
-    data_routes = create_main_routes_data(route_ids)
+    data_routes = create_main_routes_data(route_ids, active_route)
     best_offer_r = check_and_sort_routes(active_route, meteo_API, route_forecast, input_data_w, data_routes,
                                          routes_forecast)
     view_set = print_sorted_routes(data_routes, meteo_API, input_data_w, best_offer_r, print_pdf)
