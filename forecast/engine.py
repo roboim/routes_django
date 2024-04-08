@@ -2,12 +2,15 @@ import csv
 import os
 from datetime import datetime, timedelta
 from pprint import pprint
+
 from fpdf import FPDF
 
+from forecast.models import Route
 from forecast.open_meteo_data import OpenMeteoData
 from vk_api import VkGroupAdmin
 
 DATA_CSV_FILE = os.getenv('DATA_CSV_FILE')
+
 
 class RouteData:
     """Полное описание маршрута"""
@@ -302,20 +305,24 @@ def route_info_print2(data_routes, best_offer_r, route_r, i_r) -> list:
 
     str_forecast += "\n" + precipitation_p + "\nМаршрут по реке " + river_name_p + ": " + start_point_p + " - " + end_point_p + \
                     " на " + str(qty_days_p) + " дня(ей) ≈ " + str(distance_km_p) + " км." \
-                    "\nВажные комментарии: " + feature_p + "." \
-                    "\nОбласть: " + area_p + "." \
-                    "\nКоординаты старта: " + coord_start_point_p + ", финиша: " + coord_end_point_p + \
+                                                                                    "\nВажные комментарии: " + feature_p + "." \
+                                                                                                                           "\nОбласть: " + area_p + "." \
+                                                                                                                                                    "\nКоординаты старта: " + coord_start_point_p + ", финиша: " + coord_end_point_p + \
                     "\nРасположен примерно в " + str(distance_from_city_p) + " км от Москвы." \
-                    "\nКоординаты стоянки: " + coord_camping_places_p + \
+                                                                             "\nКоординаты стоянки: " + coord_camping_places_p + \
                     "\nСтоянок: " + camping_places_p + \
                     "\nПогода: " + str(description) + \
                     "\nОсадки: " + str(precipitation_sum_l) + \
                     "\nТемпература в пункте " + name_p + " составляет \nднём до: " + str(temperature_2m_max_p) + " гр," \
-                    "\nночью до: " + str(temperature_2m_min_p) + " гр," \
-                    "\nоблачность " + str(clouds_p)[0:5] + "," \
-                    "\nскорость ветра " + str(wind_p)[0:5] + " м/с, с порывами до " + str(wind_gust_p)[0:5] + " м/с," \
-                    "\nв часовом поясе МСК время восхода " + str(sunrise_p) + ", заката " + str(sunset_p) + "." \
-                    "\nФотоотчёт: " + picture_links_p + ", пройден в " + str(year_journey_p) + " г."
+                                                                                                                 "\nночью до: " + str(
+        temperature_2m_min_p) + " гр," \
+                                "\nоблачность " + str(clouds_p)[0:5] + "," \
+                                                                       "\nскорость ветра " + str(wind_p)[
+                                                                                             0:5] + " м/с, с порывами до " + str(
+        wind_gust_p)[0:5] + " м/с," \
+                            "\nв часовом поясе МСК время восхода " + str(sunrise_p) + ", заката " + str(sunset_p) + "." \
+                                                                                                                    "\nФотоотчёт: " + picture_links_p + ", пройден в " + str(
+        year_journey_p) + " г."
 
     str_forecast += make_helpful_link(coord_start_point_p, coord_end_point_p)
     # print(str_forecast)
@@ -330,10 +337,10 @@ def make_helpful_link(coord_start_p, coord_end_p) -> str:
     """Создание ссылок для создания нитки маршрута и прогноза погоды"""
     p1 = split_lat_lon(coord_start_p)
     p2 = split_lat_lon(coord_end_p)
-    #https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=33.713608,58.107636;33.802872,58.137824&profile=river
+    # https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=33.713608,58.107636;33.802872,58.137824&profile=river
     str_out = "\n\nBrouter:\n"
     str_out += "https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=" + p1["lon"] + "," + p1["lat"] + \
-        ";" + p2["lon"] + "," + p2["lat"] + "&profile=river"
+               ";" + p2["lon"] + "," + p2["lat"] + "&profile=river"
     # https://yandex.ru/pogoda/details/10-day-weather?lat=57.6638&lon=34.7665&via=ms#8
     str_out += "\nПрогноз от Яндекс.Погоды на ближайшие 10 дней:\n"
     str_out += "https://yandex.ru/pogoda/details/10-day-weather?lat=" + p1["lat"] + "&lon=" + p1["lon"] + "&via=ms#8"
@@ -383,36 +390,32 @@ def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, d
     for route_number_r, route_data_r in data_routes_r.items():
         active_route.route_clear()
         active_route.read_active_route(route_number_r, route_data_r)
+        try:
+            coord_data = split_lat_lon(active_route.coord_start_point_p)
+            check_flag = active_route.coord_start_point_p + active_route.coord_end_point_p
+            if check_flag not in major_points:
+                major_points.append(check_flag)
+                print(f'\nЗагружается маршрут: {active_route.route_db_n}')
+                if meteo_API == 2:
+                    do_api_request = check_local_data_or_api_request_is_needed(active_route.route_db_n,
+                                                                               routes_forecast_r)
+                    if do_api_request is True:
+                        result_get = route_forecast.get_open_meteo_data(coord_data['lat'], coord_data['lon'],
+                                                                        input_data['start_day'],
+                                                                        input_data['finish_day'])
+                        routes_forecast_r[active_route.route_db_n] = [datetime.now(), result_get]
+                    else:
+                        result_get = routes_forecast_r[active_route.route_db_n][1]
+                    # result_get_validated = check_local_data_or_api_request_is_needed(active_route.route_db_n,
+                    #                                                                  result_get, routes_forecast_r)
 
-        if int(input_data['target_days']) >= int(active_route.qty_days_p) and \
-                int(input_data['target_distancemax_km']) >= int(active_route.distance_from_city_p) and \
-                int(input_data['target_distancemin_km']) <= int(active_route.distance_from_city_p):
-            try:
-                coord_data = split_lat_lon(active_route.coord_start_point_p)
-                check_flag = active_route.coord_start_point_p + active_route.coord_end_point_p
-                if check_flag not in major_points:
-                    major_points.append(check_flag)
-                    print(f'\nЗагружается маршрут: {active_route.route_db_n}')
-                    if meteo_API == 2:
-                        do_api_request = check_local_data_or_api_request_is_needed(active_route.route_db_n,
-                                                                                   routes_forecast_r)
-                        if do_api_request is True:
-                            result_get = route_forecast.get_open_meteo_data(coord_data['lat'], coord_data['lon'],
-                                                                            input_data['start_day'],
-                                                                            input_data['finish_day'])
-                            routes_forecast_r[active_route.route_db_n] = [datetime.now(), result_get]
-                        else:
-                            result_get = routes_forecast_r[active_route.route_db_n][1]
-                        # result_get_validated = check_local_data_or_api_request_is_needed(active_route.route_db_n,
-                        #                                                                  result_get, routes_forecast_r)
+                    route_forecast.add_route_forecast(result_get, active_route)
+                    active_route.write_route_forecast(route_data_r)
+                    list_offer.setdefault(route_number_r, route_data_r)
 
-                        route_forecast.add_route_forecast(result_get, active_route)
-                        active_route.write_route_forecast(route_data_r)
-                        list_offer.setdefault(route_number_r, route_data_r)
-
-            except IndexError:
-                print(f"Не введены координаты старта для маршрута {active_route.river_name_p}: "
-                      f"{active_route.start_point_p} - {active_route.end_point_p}.")
+        except IndexError:
+            print(f"Не введены координаты старта для маршрута {active_route.river_name_p}: "
+                  f"{active_route.start_point_p} - {active_route.end_point_p}.")
 
     best_offer = dict(sorted(list_offer.items(), key=lambda item: item[1]['Температура'], reverse=True))
 
@@ -462,8 +465,24 @@ def print_sorted_routes(data_routes, meteo_API, input_data, best_offer_p, print_
     return best_offer_p
 
 
-def get_appropriate_routes(qty_days: int, distance_max: float, distance_min: float) -> list:
-    return []
+def get_appropriate_routes(qty_days: str, distance_min: str, distance_max: str) -> dict:
+    appropriate_routes = dict()
+    qty_days = int(qty_days)
+    distance_min = float(distance_min)
+    distance_max = float(distance_max)
+    qty_days -= 1
+    distance_min -= 0.1
+    distance_max += 0.1
+
+    db_appropriate_routes = Route.objects.filter(qty_days__gt=qty_days, distance_from_city__gt=distance_min,
+                                                 distance_from_city__lt=distance_max).distinct()
+    for i, route_id in enumerate(db_appropriate_routes):
+        appropriate_routes.setdefault(i + 1, route_id)
+    return appropriate_routes
+
+
+def create_main_routes_data(route_id_dct: dict) -> dict:
+    return {}
 
 
 def get_routes(test_seting: int, meteo_API: int, print_pdf: bool) -> dict:
@@ -481,10 +500,10 @@ def get_routes(test_seting: int, meteo_API: int, print_pdf: bool) -> dict:
                              0.0, 0.0, 0.0, [], [],
                              0.0, [], "")
     routes_forecast = dict()
-    # data_routes = read_routes(DATA_CSV_FILE)
     input_data_w = manual_input(test_seting)
-
-    data_routes =[]
+    route_ids = get_appropriate_routes(input_data_w['target_days'], input_data_w['target_distancemin_km'],
+                                       input_data_w['target_distancemax_km'])
+    data_routes = create_main_routes_data(route_ids)
     best_offer_r = check_and_sort_routes(active_route, meteo_API, route_forecast, input_data_w, data_routes,
                                          routes_forecast)
     view_set = print_sorted_routes(data_routes, meteo_API, input_data_w, best_offer_r, print_pdf)
