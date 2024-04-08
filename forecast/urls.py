@@ -10,5 +10,5 @@ r = DefaultRouter()
 urlpatterns = [
     path('routes/', read_routes_from_csv, name='routes'),
     path('routes/update/', update_routes_from_csv, name='routes_update'),
-    path('bearroute/', bear_route, name='bearroute'),
+    path('bearroutes/', bear_route, name='bearroute'),
 ] + r.urls

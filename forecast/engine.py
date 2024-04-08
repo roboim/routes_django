@@ -5,7 +5,7 @@ from pprint import pprint
 
 from fpdf import FPDF
 
-from forecast.models import Route
+from forecast.models import Route, RouteWeather
 from forecast.open_meteo_data import OpenMeteoData
 from vk_api import VkGroupAdmin
 
@@ -17,7 +17,8 @@ class RouteData:
 
     def __init__(self, route_n: int, route_db_n: int, name: str, area_p: str, start_point_p: str,
                  end_point_p: str,
-                 distance_km_p: float, year_journey_p: int, qty_days_p: int, distance_from_city_p: float, feature_p: str,
+                 distance_km_p: float, year_journey_p: int, qty_days_p: int, distance_from_city_p: float,
+                 feature_p: str,
                  camping_places_p: str, coord_camping_places_p: str, picture_links_p: str,
                  coord_start_point_p: str, coord_end_point_p: str, category_p: int, name_p: str, temperature_p: float,
                  temperature_2m_max_p: list, temperature_2m_min_p: list, sunrise_p: str, sunset_p: str,
@@ -377,17 +378,31 @@ def make_pdf(text, filename) -> None:
     pdf.output(filename)
 
 
-def check_local_data_or_api_request_is_needed(route_v, routes_forecast_v):
-    """Проверить полученные ранее данные, если они были не так давно записаны, то выгружать с ПК"""
-    fix_time = datetime.now()
-    if route_v in routes_forecast_v:
-        time_1 = fix_time - routes_forecast_v[route_v][0]
-        if time_1.seconds > 60:
-            return True
-        else:
-            return False
-    else:
+def check_local_data_or_api_request_is_needed(active_route, start_day, finish_day):
+    """Проверить полученные ранее данные, если они были не так давно записаны, то выгружать из БД"""
+    try:
+        # a = RouteWeather.objects.create(route_id=active_route.route_n, start_day=start_day, finish_day=finish_day)
+        # a.save()
+        route_weather = RouteWeather.objects.filter(route_id=active_route.route_n, start_day=start_day, finish_day=finish_day)  #.order_by('-dt')
+        result = route_weather.latest('dt')
+        print(result.dt)
+        fix_time = datetime.now()
+
         return True
+        # print(fix_time - timedelta(hours=4))
+        # return True if fix_time - timedelta(hours=4) > result.dt else False
+
+    except Exception as error:
+        print(error)
+        return True
+    # if route_v in routes_forecast_v:
+    #     time_1 = fix_time - routes_forecast_v[route_v][0]
+    #     if time_1.seconds > 60:
+    #         return True
+    #     else:
+    #         return False
+    # else:
+    #     return True
 
 
 def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, data_routes_r,
@@ -405,8 +420,8 @@ def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, d
                 major_points.append(check_flag)
                 print(f'\nЗагружается маршрут: {active_route.route_db_n}')
                 if meteo_API == 2:
-                    do_api_request = check_local_data_or_api_request_is_needed(active_route.route_db_n,
-                                                                               routes_forecast_r)
+                    do_api_request = check_local_data_or_api_request_is_needed(active_route, input_data['start_day'],
+                                                                               input_data['finish_day'])
                     if do_api_request is True:
                         result_get = route_forecast.get_open_meteo_data(coord_data['lat'], coord_data['lon'],
                                                                         input_data['start_day'],

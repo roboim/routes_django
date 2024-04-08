@@ -38,35 +38,37 @@ class Route(models.Model):
         ordering = ('-name',)
 
     def __str__(self):
-        return f'{self.id}'
+        return f'{self.pk}'
         # return f'Маршрут: {self.name}, внешний номер: {self.route_db_id}, год прохождения:  {self.year_journey}'
 
 
-class RouteWeather:
-    route_id = models.ForeignKey(Route, verbose_name='Маршрут', related_name='route_weathers', blank=True,
+class RouteWeather(models.Model):
+    route = models.ForeignKey(Route, verbose_name='Маршрут', related_name='route_weathers', blank=True,
                                  on_delete=models.CASCADE)
     dt = models.DateTimeField(auto_now_add=True)
+    start_day = models.DateField(blank=False)
+    finish_day = models.DateField(blank=False)
     name_p = models.CharField(max_length=200, verbose_name='Ответ сервера по месту прогноза')
-    temperature = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Температура')
-    temperature_2m_max = models.DecimalField(max_digits=4, decimal_places=1,
+    temperature = models.DecimalField(max_digits=4, decimal_places=1, default=0, verbose_name='Температура')
+    temperature_2m_max = models.DecimalField(max_digits=4, decimal_places=1, default=0,
                                              verbose_name='Максимальная температура по дням')
-    temperature_2m_min = models.DecimalField(max_digits=4, decimal_places=1,
+    temperature_2m_min = models.DecimalField(max_digits=4, decimal_places=1, default=0,
                                              verbose_name='Минимальная температура по ночам')
     sunrise = models.CharField(max_length=50, verbose_name='Рассвет')
     sunset = models.CharField(max_length=50, verbose_name='Закат')
-    wind = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Ветер')
-    wind_gust = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Порыв ветра')
-    clouds_p = models.DecimalField(max_digits=5, decimal_places=1, verbose_name='Облачность')
+    wind = models.DecimalField(max_digits=4, decimal_places=1,  default=0, verbose_name='Ветер')
+    wind_gust = models.DecimalField(max_digits=4, decimal_places=1,  default=0, verbose_name='Порыв ветра')
+    clouds_p = models.DecimalField(max_digits=5, decimal_places=1,  default=0, verbose_name='Облачность')
     description = models.CharField(max_length=200, verbose_name='Погода по дням')
     description_p = models.CharField(max_length=200, verbose_name='Погода')
-    precipitation_sum_p = models.DecimalField(max_digits=5, decimal_places=1, verbose_name='Осадки')
-    precipitation_sum_l = models.DecimalField(max_digits=5, decimal_places=1, verbose_name='Осадки по дням')
+    precipitation_sum_p = models.DecimalField(max_digits=5, decimal_places=1,  default=0, verbose_name='Осадки')
+    precipitation_sum_l = models.DecimalField(max_digits=5, decimal_places=1,  default=0, verbose_name='Осадки по дням')
     precipitation = models.CharField(max_length=50, verbose_name='Осадки_качественно')
 
     class Meta:
         verbose_name = 'Прогноз на маршрут'
         verbose_name_plural = "Прогнозы для маршрутов"
-        ordering = ('-name',)
+        ordering = ('-route_id',)
 
     def __str__(self):
-        return self.name_p
+        return f'{self.pk} {self.route} {self.dt}'
