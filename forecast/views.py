@@ -32,7 +32,7 @@ def update_routes_from_csv(request) -> render:
             area = route_details['Область']
             start_point = route_details['Место старта']
             end_point = route_details['Место финиша']
-            distance_km = route_details['Дистанция']
+            distance_km = float(route_details['Дистанция'])
             year_journey = int(route_details['Год']) if route_details['Год'] else 0
             qty_days = int(route_details['Кол-во дней'])
             distance_from_city = float(route_details['От Москвы, км'])

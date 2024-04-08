@@ -19,7 +19,7 @@ class Route(models.Model):
     area = models.CharField(max_length=50, verbose_name='Область')
     start_point = models.CharField(max_length=50, verbose_name='Место старта')
     end_point = models.CharField(max_length=50, verbose_name='Место финиша')
-    distance_km = models.CharField(max_length=50, verbose_name='Дистанция')
+    distance_km = models.DecimalField(max_digits=6, decimal_places=1, verbose_name='Дистанция')
     year_journey = models.IntegerField(verbose_name='Год')
     qty_days = models.IntegerField(verbose_name='Кол-во дней')
     distance_from_city = models.DecimalField(max_digits=6, decimal_places=1, verbose_name='От Москвы, км')
