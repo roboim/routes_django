@@ -1,20 +1,23 @@
+import os
+
 from django.shortcuts import render
 from rest_framework.response import Response
 
-from forecast.engine import read_routes
+from forecast.engine import read_routes, RouteData, manual_input, get_routes
 from forecast.models import Route, Category
+from forecast.open_meteo_data import OpenMeteoData
 
-DATA_CSV_FILE = "data.csv"
+DATA_CSV_FILE = os.getenv('DATA_CSV_FILE')
 
 
 # Create your views here.
-def read_routes_from_csv(request):
+def read_routes_from_csv(request) -> render:
     data_routes = read_routes(DATA_CSV_FILE)
     routes = [route for number, route in data_routes.items()]
     return render(request, 'forecast/default_routes.html', {'header': 'Доступные маршруты', 'routes': routes})
 
 
-def update_routes_from_csv(request):
+def update_routes_from_csv(request) -> render:
     """
     Обновление маршрута происходит по месту старта и финиша
     """
@@ -71,6 +74,13 @@ def update_routes_from_csv(request):
 
         return render(request, 'forecast/updated_routes.html',
                       {'header': f'Добавлены маршруты категории: {category}.', 'routes': response_routes})
+
+
+def bear_route(request):
+    prepared_data = get_routes(1, 2, False)
+    header = prepared_data.pop('header')
+    routes = [route for number, route in prepared_data.items()]
+    return render(request, 'forecast/default_routes.html', {'header': header, 'routes': routes})
 
 
 def error_prompt(status_data: bool, error_data: str, code_data: int) -> Response:
