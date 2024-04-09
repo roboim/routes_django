@@ -3,9 +3,8 @@ import os
 from django.shortcuts import render
 from rest_framework.response import Response
 
-from forecast.engine import read_routes, RouteData, manual_input, get_routes
+from forecast.engine import read_routes, get_routes
 from forecast.models import Route, Category
-from forecast.open_meteo_data import OpenMeteoData
 
 DATA_CSV_FILE = os.getenv('DATA_CSV_FILE')
 

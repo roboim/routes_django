@@ -226,7 +226,7 @@ def manual_input(test_value) -> dict:
         start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
         finish_day = start_day_d + timedelta(int(target_days) - 1)
         target_distancemin_km = "1"
-        target_distancemax_km = "200"  # 200 км
+        target_distancemax_km = "300"  # 300 км
 
         data_request.setdefault("target_days", target_days)
         data_request.setdefault("start_day", start_day)
@@ -318,26 +318,55 @@ def route_info_print(best_offer_r, route_r, i_r) -> list:
     list_out = dict()
     list_out['Маршрут №'] = str(i_r)
     list_out['Важно'] = precipitation_p
-    str_forecast = "\n\nМаршрут № " + str(i_r)
-    str_forecast += "\n" + precipitation_p + "\nМаршрут по реке " + name + ": " + start_point_p + " - " + end_point_p + \
-                    " на " + str(qty_days_p) + " дня(ей) ≈ " + str(distance_km_p) + " км." \
-                    "\nВажные комментарии: " + feature_p + "." \
-                    "\nОбласть: " + area_p + "." \
-                    "\nКоординаты старта: " + coord_start_point_p + ", финиша: " + coord_end_point_p + \
-                    "\nРасположен примерно в " + str(distance_from_city_p) + " км от Москвы." \
-                    "\nКоординаты стоянки: " + coord_camping_places_p + \
-                    "\nСтоянок: " + camping_places_p + \
-                    "\nПогода: " + str(description) + \
-                    "\nОсадки: " + str(precipitation_sum_l) + \
-                    "\nТемпература в пункте " + name_p + " составляет \nднём до: " + str(temperature_2m_max_p) + " гр," \
-                    "\nночью до: " + str(temperature_2m_min_p) + " гр," \
-                    "\nсреднее значение: " + str(temperature_p) + " гр," \
-                    "\nоблачность " + str(clouds_p)[0:5] + "," \
-                    "\nскорость ветра " + str(wind_p)[0:5] + " м/с, с порывами до " + str(wind_gust_p)[0:5] + " м/с," \
-                    "\nв часовом поясе МСК время восхода " + str(sunrise_p) + ", заката " + str(sunset_p) + "." \
-                    "\nФотоотчёт: " + picture_links_p + ", пройден в " + str(year_journey_p) + " г."
+    list_out['Маршрут по'] = name
+    list_out['Старт'] = start_point_p + ". Финиш : " + end_point_p + "."
+    list_out['на'] = str(qty_days_p) + " дня(ей)."
+    list_out['Длина маршрута'] = str(distance_km_p) + " км."
+    list_out['Важные комментарии'] = feature_p + "."
+    list_out['Область'] = area_p + "."
+    list_out['Координаты старта'] = coord_start_point_p
+    list_out['Координаты финиша'] = coord_end_point_p
+    list_out['Расположен примерно в'] = str(distance_from_city_p) + " км от Москвы."
+    list_out['Координаты стоянки'] = coord_camping_places_p + "."
+    list_out['Стоянок'] = camping_places_p + "."
+    list_out['Погода'] = str(description) + "."
+    list_out['Осадки'] = str(precipitation_sum_l) + "."
+    list_out['Температура в пункте'] = name_p
+    list_out['днём до'] = str(temperature_2m_max_p) + " гр,"
+    list_out['ночью до'] = str(temperature_2m_min_p) + " гр,"
+    # list_out['среднее значение'] = str(temperature_p) + " гр,"
+    list_out['облачность'] = str(clouds_p)[0:5] + ","
+    list_out['скорость ветра'] = str(wind_p)[0:5] + " м/с,"
+    list_out['с порывами до'] = str(wind_gust_p)[0:5] + " м/с,"
+    list_out['в часовом поясе МСК время восхода'] = str(sunrise_p) + ","
+    list_out['заката'] = str(sunset_p) + "."
+    list_out['Фотоотчёт'] = picture_links_p + ","
+    list_out['пройден в'] = str(year_journey_p) + " г."
+    links = make_helpful_link(coord_start_point_p, coord_end_point_p)
+    list_out['Brouter'] = links['Brouter']
+    list_out["Прогноз от Яндекс.Погоды на ближайшие 10 дней"] = links['Прогноз от Яндекс.Погоды на ближайшие 10 дней']
 
-    str_forecast += make_helpful_link(coord_start_point_p, coord_end_point_p)
+
+    # str_forecast = "\n\nМаршрут № " + str(i_r)
+    # str_forecast += "\n" + precipitation_p + "\nМаршрут по реке " + name + ": " + start_point_p + " - " + end_point_p + \
+    #                 " на " + str(qty_days_p) + " дня(ей) ≈ " + str(distance_km_p) + " км." \
+    #                 "\nВажные комментарии: " + feature_p + "." \
+    #                 "\nОбласть: " + area_p + "." \
+    #                 "\nКоординаты старта: " + coord_start_point_p + ", финиша: " + coord_end_point_p + \
+    #                 "\nРасположен примерно в " + str(distance_from_city_p) + " км от Москвы." \
+    #                 "\nКоординаты стоянки: " + coord_camping_places_p + \
+    #                 "\nСтоянок: " + camping_places_p + \
+    #                 "\nПогода: " + str(description) + \
+    #                 "\nОсадки: " + str(precipitation_sum_l) + \
+    #                 "\nТемпература в пункте " + name_p + " составляет \nднём до: " + str(temperature_2m_max_p) + " гр," \
+    #                 "\nночью до: " + str(temperature_2m_min_p) + " гр," \
+    #                 "\nсреднее значение: " + str(temperature_p) + " гр," \
+    #                 "\nоблачность " + str(clouds_p)[0:5] + "," \
+    #                 "\nскорость ветра " + str(wind_p)[0:5] + " м/с, с порывами до " + str(wind_gust_p)[0:5] + " м/с," \
+    #                 "\nв часовом поясе МСК время восхода " + str(sunrise_p) + ", заката " + str(sunset_p) + "." \
+    #                 "\nФотоотчёт: " + picture_links_p + ", пройден в " + str(year_journey_p) + " г."
+    #
+    # str_forecast += make_helpful_link(coord_start_point_p, coord_end_point_p)
     # print(str_forecast)
 
     # Файл больше не создаём, интерфейс - браузер.
@@ -348,19 +377,19 @@ def route_info_print(best_offer_r, route_r, i_r) -> list:
     return route_item_p
 
 
-def make_helpful_link(coord_start_p, coord_end_p) -> str:
+def make_helpful_link(coord_start_p, coord_end_p) -> dict:
     """Создание ссылок для создания нитки маршрута и прогноза погоды"""
     p1 = split_lat_lon(coord_start_p)
     p2 = split_lat_lon(coord_end_p)
     # https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=33.713608,58.107636;33.802872,58.137824&profile=river
-    str_out = "\n\nBrouter:\n"
-    str_out += "https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=" + p1["lon"] + "," + p1["lat"] + \
+    value_1 = "https://brouter.de/brouter-web/#map=5/57.140/41.950/standard&lonlats=" + p1["lon"] + "," + p1["lat"] + \
                ";" + p2["lon"] + "," + p2["lat"] + "&profile=river"
     # https://yandex.ru/pogoda/details/10-day-weather?lat=57.6638&lon=34.7665&via=ms#8
-    str_out += "\nПрогноз от Яндекс.Погоды на ближайшие 10 дней:\n"
-    str_out += "https://yandex.ru/pogoda/details/10-day-weather?lat=" + p1["lat"] + "&lon=" + p1["lon"] + "&via=ms#8"
-
-    return str_out
+    value_2 = "https://yandex.ru/pogoda/details/10-day-weather?lat=" + p1["lat"] + "&lon=" + p1["lon"] + "&via=ms#8"
+    dict_out = dict()
+    dict_out['Brouter'] = value_1
+    dict_out["Прогноз от Яндекс.Погоды на ближайшие 10 дней"] = value_2
+    return dict_out
 
 
 def make_pdf(text, filename) -> None:
@@ -423,7 +452,6 @@ def create_route_weather_forecast(active_route, start_day, finish_day, result):
         temperature_2m_min = str(result['daily']['temperature_2m_min'])
         precipitation_sum_l = result['daily']['precipitation_sum']
         precipitation_sum = sum(precipitation_sum_l) / len(precipitation_sum_l)
-        precipitation_sum_l = str(precipitation_sum_l)
         sunrise = result['daily']['sunrise'][0][11:]
         sunset = result['daily']['sunset'][0][11:]
         wind_l = result['hourly']['windspeed_10m']
@@ -435,6 +463,7 @@ def create_route_weather_forecast(active_route, start_day, finish_day, result):
         description = result['daily']['weathercode']
         description = str(description)
         precipitation = "ОСАДКИ!" if precipitation_sum > 0.2 or max(precipitation_sum_l) > 0.2 else "Нет осадков."
+        precipitation_sum_l = str(precipitation_sum_l)
         cur_forecast = RouteWeather.objects.create(route_id=active_route.route_n,
                                                    start_day=start_day_d,
                                                    finish_day=finish_day,
@@ -500,15 +529,9 @@ def print_sorted_routes(meteo_API, input_data, best_offer_p, print_pdf_p) -> dic
 
     routes_info['header'] = str_file.replace('\n', '<br/>')
 
-    info_data = [{'Дата начала: ': str(input_data['start_day'])},
-                 {'Максимальная длительность: ': str(input_data['target_days'])},
-                 {'Минимальная удалённость от Москвы: ': str(input_data['target_distancemin_km'] + " км.")},
-                 {'Максимальная удалённость от Москвы: ': str(input_data['target_distancemax_km'] + " км.")}
-    ]
-
     routes_info['info'] = {
         'Дата начала': str(input_data['start_day']),
-        'Максимальная длительность': str(input_data['target_days']),
+        'Длительность в днях': str(input_data['target_days']),
         'Минимальная удалённость от Москвы': str(input_data['target_distancemin_km'] + " км."),
         'Максимальная удалённость от Москвы': str(input_data['target_distancemax_km'] + " км.")
     }
@@ -519,6 +542,7 @@ def print_sorted_routes(meteo_API, input_data, best_offer_p, print_pdf_p) -> dic
     i = 1
     route_item = ['', '', '']
     route_info = dict()
+    top_route = dict()
     for route in list_best_offer:
         if (route_item[0] == best_offer_p[route]['name'] and
                 route_item[1] == best_offer_p[route]['start_point_p'] and route_item[2] == best_offer_p[route][
