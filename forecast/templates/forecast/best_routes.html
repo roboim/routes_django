@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Рекомендованные маршруты</title>
+</head>
+<body>
+    <h1>Рекомендованные маршруты</h1>
+    <p>{{ header }}</p>
+
+    <li>------------------------------</li>
+    {% for route in routes %}
+        {% for el1, el2  in route.items %}
+        <a>{{ el1 }} : {{ el2 }}<br/></a>
+        {% endfor %}
+        <li>------------------------------</li>
+    {% endfor %}
+
+</body>
+</html>

@@ -79,8 +79,8 @@ def update_routes_from_csv(request) -> render:
 def bear_route(request):
     prepared_data = get_routes(1, 2, False)
     header = prepared_data.pop('header')
-    routes = [route for number, route in prepared_data.items()]
-    return render(request, 'forecast/default_routes.html', {'header': header, 'routes': routes})
+    routes = [route for number, route in prepared_data['routes'].items()]
+    return render(request, 'forecast/best_routes.html', {'header': header, 'routes': routes})
 
 
 def error_prompt(status_data: bool, error_data: str, code_data: int) -> Response:
