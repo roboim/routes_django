@@ -496,15 +496,22 @@ def print_sorted_routes(meteo_API, input_data, best_offer_p, print_pdf_p) -> dic
     routes_info = dict()
     list_best_offer = list(best_offer_p)
 
-    str_file = "Сортировка выполнена по температуре, указано наличие или отсутствие дождя." \
-               "\nРЕКОМЕНДАЦИИ ПО МАРШРУТАМ" \
-               "\nДата начала:" + str(input_data['start_day']) + \
-               "\nМаксимальная длительность: " + str(input_data['target_days']) + \
-               "\nМинимальная удалённость от Москвы: " + str(input_data['target_distancemin_km']) + " км." \
-               "\nМаксимальная удалённость от Москвы: " + str(input_data['target_distancemax_km']) + " км.\n"
+    str_file = "Сортировка выполнена по температуре, указано наличие или отсутствие дождя."
 
     routes_info['header'] = str_file.replace('\n', '<br/>')
 
+    info_data = [{'Дата начала: ': str(input_data['start_day'])},
+                 {'Максимальная длительность: ': str(input_data['target_days'])},
+                 {'Минимальная удалённость от Москвы: ': str(input_data['target_distancemin_km'] + " км.")},
+                 {'Максимальная удалённость от Москвы: ': str(input_data['target_distancemax_km'] + " км.")}
+    ]
+
+    routes_info['info'] = {
+        'Дата начала': str(input_data['start_day']),
+        'Максимальная длительность': str(input_data['target_days']),
+        'Минимальная удалённость от Москвы': str(input_data['target_distancemin_km'] + " км."),
+        'Максимальная удалённость от Москвы': str(input_data['target_distancemax_km'] + " км.")
+    }
     # Файл больше не создаём, интерфейс - браузер.
     # with open("прогноз.txt", "w", encoding='UTF-8') as file1:
     #     file1.write(str_file)

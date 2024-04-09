@@ -8,6 +8,12 @@
     <h1>Рекомендованные маршруты</h1>
     <p>{{ header }}</p>
 
+    <p>
+        {% for l1, l2  in info.items %}
+        <a>{{ l1 }} : {{ l2 }}<br/></a>
+        {% endfor %}
+    </p>
+
     <li>------------------------------</li>
     {% for route in routes %}
         {% for el1, el2  in route.items %}
