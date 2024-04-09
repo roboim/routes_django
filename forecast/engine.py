@@ -226,7 +226,7 @@ def manual_input(test_value) -> dict:
         start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
         finish_day = start_day_d + timedelta(int(target_days) - 1)
         target_distancemin_km = "1"
-        target_distancemax_km = "300"  # 300 км
+        target_distancemax_km = "250"  # 250 км
 
         data_request.setdefault("target_days", target_days)
         data_request.setdefault("start_day", start_day)
