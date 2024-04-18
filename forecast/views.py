@@ -26,7 +26,7 @@ def update_routes_from_csv(request) -> render:
         category_db, _ = Category.objects.get_or_create(name=category)
         data_routes = read_routes(DATA_CSV_FILE)
         for route, route_details in data_routes.items():
-            route_db_id = int(route_details['№'])
+            route_db_id = int(route_details['\ufeff№'])
             name = route_details['Река']
             area = route_details['Область']
             start_point = route_details['Место старта']
@@ -76,11 +76,21 @@ def update_routes_from_csv(request) -> render:
 
 
 def bear_route(request):
-    prepared_data = get_routes(1, 2, False)
+    return select_input_data(request, 1)
+
+
+def query_route(request):
+    return select_input_data(request, 2)
+
+
+def select_input_data(request, input_mode: int):
+    prepared_data = get_routes(input_mode, 2, False, request)
     header = prepared_data.pop('header')
     info = prepared_data.pop('info')
+    top_routes = [top_route for number, top_route in prepared_data['top_routes'].items()]
     routes = [route for number, route in prepared_data['routes'].items()]
-    return render(request, 'forecast/best_routes.html', {'header': header, 'routes': routes, 'info': info})
+    return render(request, 'forecast/best_routes.html',
+                  {'header': header, 'routes': routes, 'info': info, 'top_routes': top_routes})
 
 
 def error_prompt(status_data: bool, error_data: str, code_data: int) -> Response:
