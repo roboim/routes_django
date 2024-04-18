@@ -1,5 +1,6 @@
 import os
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.response import Response
 
@@ -85,6 +86,8 @@ def query_route(request):
 
 def select_input_data(request, input_mode: int):
     prepared_data = get_routes(input_mode, 2, False, request)
+    if prepared_data['error']:
+        return JsonResponse(prepared_data)
     header = prepared_data.pop('header')
     info = prepared_data.pop('info')
     top_routes = [top_route for number, top_route in prepared_data['top_routes'].items()]

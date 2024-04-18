@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from pprint import pprint
 
+from django.core.exceptions import BadRequest
 from fpdf import FPDF
 
 from forecast.models import Route, RouteWeather
@@ -245,6 +246,7 @@ def prepare_query(request):
     target_distancemin_km = request.GET.get('min_km')
     target_distancemax_km = request.GET.get('max_km')
     return data_request
+
 
 def split_lat_lon(coord_str) -> dict:
     """Разделить строку на широту и долготу"""
@@ -612,6 +614,8 @@ def get_routes(test_seting: int, meteo_API: int, print_pdf: bool, request) -> di
         input_data_w = manual_input(test_seting)
     elif test_seting == 2:
         input_data_w = prepare_query(request)
+    else:
+        return {'error': 'unkown test_seting'}
 
     route_ids = get_appropriate_routes(input_data_w['target_days'], input_data_w['target_distancemin_km'],
                                        input_data_w['target_distancemax_km'])
