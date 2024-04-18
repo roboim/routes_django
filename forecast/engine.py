@@ -241,10 +241,20 @@ def manual_input(test_value) -> dict:
 
 def prepare_query(request):
     data_request = dict()
-    target_days = request.GET.get('days')
-    start_day = request.GET.get('start')
-    target_distancemin_km = request.GET.get('min_km')
-    target_distancemax_km = request.GET.get('max_km')
+    target_days = request.GET.get('days') if request.GET.get('days') else '0'
+    start_day = request.GET.get('start') if request.GET.get('start') else datetime.today().strftime('%Y-%m-%d')
+    target_distancemin_km = request.GET.get('min_km') if request.GET.get('min_km') else '0'
+    target_distancemax_km = request.GET.get('max_km') if request.GET.get('max_km') else '0'
+
+    start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
+    finish_day = start_day_d + timedelta(int(target_days) - 1)
+
+    data_request.setdefault("target_days", target_days)
+    data_request.setdefault("start_day", start_day)
+    data_request.setdefault("finish_day", finish_day)
+    data_request.setdefault("target_distancemin_km", target_distancemin_km)
+    data_request.setdefault("target_distancemax_km", target_distancemax_km)
+
     return data_request
 
 
