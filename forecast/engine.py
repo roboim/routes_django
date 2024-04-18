@@ -3,7 +3,6 @@ import os
 from datetime import datetime, timedelta
 from pprint import pprint
 
-from django.core.exceptions import BadRequest
 from fpdf import FPDF
 
 from forecast.models import Route, RouteWeather
@@ -248,6 +247,12 @@ def prepare_query(request):
 
     start_day_d = datetime.strptime(start_day, "%Y-%m-%d").date()
     finish_day = start_day_d + timedelta(int(target_days) - 1)
+
+    today_now = datetime.now().date()
+    finish_max_day = today_now + timedelta(14)
+    if today_now > start_day_d or start_day_d > finish_max_day or today_now > finish_day or finish_day > finish_max_day:
+        error_str = f"Check start and finish dates: {today_now} - {finish_max_day}. Mustn't be over 14 days from now"
+        return {'error': error_str}
 
     data_request.setdefault("target_days", target_days)
     data_request.setdefault("start_day", start_day)
@@ -624,6 +629,8 @@ def get_routes(test_seting: int, meteo_API: int, print_pdf: bool, request) -> di
         input_data_w = manual_input(test_seting)
     elif test_seting == 2:
         input_data_w = prepare_query(request)
+        if 'error' in input_data_w.keys():
+            return input_data_w
     else:
         return {'error': 'unkown test_seting'}
 
