@@ -503,7 +503,8 @@ def check_and_sort_routes(active_route, meteo_API, route_forecast, input_data, d
             check_flag = active_route.coord_start_point_p + active_route.coord_end_point_p
             if check_flag not in major_points:
                 major_points.append(check_flag)
-                print(f'\nЗагружается маршрут: {active_route.route_db_n}')
+                active_route_number_str = active_route.route_db_n
+                print(f'\nЗагружается маршрут: {active_route_number_str}')
                 if meteo_API == 2:
                     weather_data = load_or_get_weather_data(active_route, route_forecast,
                                                             input_data['start_day'],
@@ -581,11 +582,11 @@ def get_appropriate_routes(qty_days: str, distance_min: str, distance_max: str) 
     qty_days = int(qty_days)
     distance_min = float(distance_min)
     distance_max = float(distance_max)
-    qty_days += 1
+    # qty_days += 1
     distance_min -= 0.1
     distance_max += 0.1
 
-    db_appropriate_routes = Route.objects.filter(qty_days__lt=qty_days, distance_from_city__gt=distance_min,
+    db_appropriate_routes = Route.objects.filter(qty_days=qty_days, distance_from_city__gt=distance_min,
                                                  distance_from_city__lt=distance_max).distinct()
     for i, route_id in enumerate(db_appropriate_routes):
         appropriate_routes.setdefault(i + 1, route_id)

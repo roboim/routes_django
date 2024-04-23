@@ -28,6 +28,7 @@ def update_routes_from_csv(request) -> render:
         data_routes = read_routes(DATA_CSV_FILE)
         for route, route_details in data_routes.items():
             route_db_id = int(route_details['\ufeff№'])
+            # route_db_id = int(route_details['№'])
             name = route_details['Река']
             area = route_details['Область']
             start_point = route_details['Место старта']
@@ -88,6 +89,14 @@ def select_input_data(request, input_mode: int):
     prepared_data = get_routes(input_mode, 2, False, request)
     if 'error' in prepared_data.keys():
         return JsonResponse(prepared_data)
+    bot = request.GET.get('bot')
+    if bot == 'True':
+        bot_json = dict()
+        bot_json.setdefault('header', prepared_data['header'])
+        bot_json.setdefault('info', prepared_data['info'])
+        bot_json.setdefault('top_routes', prepared_data['top_routes'])
+        return JsonResponse(bot_json)
+
     header = prepared_data.pop('header')
     info = prepared_data.pop('info')
     top_routes = [top_route for number, top_route in prepared_data['top_routes'].items()]
